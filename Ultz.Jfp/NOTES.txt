@@ -1,0 +1,2 @@
+Code Notes:
+- Where the term "Server" is used, we mean Remote. The protocol does not define a client or a server, as both can assume the same roles.
