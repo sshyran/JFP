@@ -17,8 +17,8 @@ namespace TestApp1
 
         static void Main(string[] args)
         {
-                _listener = new JfpListener(new TcpListener(IPAddress.Any, Jfp.Port));
-                Task.Run(() => { ServerRunner(); });
+            _listener = new JfpListener(new TcpListener(IPAddress.Any, Jfp.Port));
+            Task.Run(() => { ServerRunner(); });
             Thread.Sleep(1000);
             var pump = Jfp.Connect("jfp://localhost/");
             var stream = pump.Send("HELLO_WORLD_TEST", Encoding.UTF8.GetBytes("Hello, world!\n"));

@@ -12,7 +12,7 @@ namespace Ultz.Jfp.SimpleServer
 {
     public class JfpAttributeHandlerResolver : IAttributeHandlerResolver
     {
-        private List<Type> _types;
+        private List<Type> _types = new List<Type>();
 
         public void Register<T>() where T : JfpAttribute
         {

@@ -9,7 +9,8 @@ namespace TestApp2
     {
         protected override void BeforeStart()
         {
-            
+            ((JfpProtocol)Protocol).AttributeHandlerResolver.Register<HelloWorldTestAttribute>();
+            RegisterHandlers(new TestHandlers());
         }
 
         protected override void OnStart()
@@ -34,6 +35,7 @@ namespace TestApp2
 
         protected override void OnError(ErrorType type, IContext context)
         {
+            ((JfpProtocol)Protocol).AttributeHandlerResolver.Deregister<HelloWorldTestAttribute>();
         }
 
         public override IProtocol Protocol => new JfpProtocol();

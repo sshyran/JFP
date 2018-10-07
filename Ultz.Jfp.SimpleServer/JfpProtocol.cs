@@ -17,6 +17,7 @@ namespace Ultz.Jfp.SimpleServer
                 ContextCreated?.Invoke(sender,
                     new ContextEventArgs(new JfpContext(jfp, logger, (JfpStream) args.DataStream)));
             };
+            jfp.Pump.Start();
             return Task.CompletedTask;
         }
 

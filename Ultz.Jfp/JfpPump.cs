@@ -67,6 +67,8 @@ namespace Ultz.Jfp
 
         public void Dispose()
         {
+            if (_pumping)
+                Stop();
             _receiptPump?.Dispose();
             _cancellationToken?.Dispose();
         }
