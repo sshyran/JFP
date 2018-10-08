@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Ultz.Jfp;
 using Ultz.Jfp.SimpleServer;
 using Ultz.SimpleServer.Common;
@@ -31,13 +32,14 @@ namespace TestApp2
 
         protected override void AfterStop()
         {
+            ((JfpProtocol)Protocol).AttributeHandlerResolver.Deregister<HelloWorldTestAttribute>();
         }
 
         protected override void OnError(ErrorType type, IContext context)
         {
-            ((JfpProtocol)Protocol).AttributeHandlerResolver.Deregister<HelloWorldTestAttribute>();
+            context.Logger.LogError(CurrentError,type.ToString());
         }
 
-        public override IProtocol Protocol => new JfpProtocol();
+        public override IProtocol Protocol { get; } = new JfpProtocol();
     }
 }

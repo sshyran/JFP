@@ -11,13 +11,13 @@ namespace Ultz.Jfp.SimpleServer
     {
         public Task HandleConnectionAsync(IConnection connection, ILogger logger)
         {
-            var jfp = new JfpConnection(connection);
-            jfp.Pump.OnCommand += (sender, args) =>
+            var pump = new JfpPump(connection.Stream);
+            pump.OnCommand += (sender, args) =>
             {
                 ContextCreated?.Invoke(sender,
-                    new ContextEventArgs(new JfpContext(jfp, logger, (JfpStream) args.DataStream)));
+                    new ContextEventArgs(new JfpContext(new JfpConnection(connection,pump), logger, (JfpStream) args.DataStream)));
             };
-            jfp.Pump.Start();
+            pump.Start();
             return Task.CompletedTask;
         }
 

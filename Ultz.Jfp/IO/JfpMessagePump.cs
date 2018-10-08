@@ -75,7 +75,10 @@ namespace Ultz.Jfp.IO
         
         internal async Task<JfpMessage> ReceiveAsync()
         {
-            return JsonConvert.DeserializeObject<JfpMessage>(await _reader.ReadLineAsync());
+            var line = await _reader.ReadLineAsync();
+            if (line == null)
+                return null;
+            return JsonConvert.DeserializeObject<JfpMessage>(line);
         }
 
         public void Dispose()

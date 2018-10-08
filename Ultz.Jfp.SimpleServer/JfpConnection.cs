@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Ultz.SimpleServer.Internals;
 
@@ -8,10 +9,11 @@ namespace Ultz.Jfp.SimpleServer
     public class JfpConnection : IConnection
     {
         private IConnection _base;
-        public JfpConnection(IConnection @base)
+
+        public JfpConnection(IConnection @base, JfpPump pump)
         {
             _base = @base;
-            Pump = new JfpPump(Stream);
+            Pump = pump;
         }
         
         public void Close()

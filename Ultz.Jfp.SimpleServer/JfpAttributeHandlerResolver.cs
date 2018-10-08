@@ -26,10 +26,7 @@ namespace Ultz.Jfp.SimpleServer
 
         public IEnumerable<IHandler> GetHandlers(object obj)
         {
-            return from method in obj.GetType().GetMethods()
-                from attr in _types
-                where method.GetCustomAttributes(attr, true).Length != 0
-                select new Handler(((JfpAttribute) Activator.CreateInstance(attr)).MessageType, method, obj);
+            return (from method in obj.GetType().GetMethods() from attr in _types where method.GetCustomAttributes(attr, true).Length != 0 select new Handler(((JfpAttribute) Activator.CreateInstance(attr)).MessageType, method, obj)).Cast<IHandler>();
         }
 
         private class Handler : IHandler
@@ -40,6 +37,8 @@ namespace Ultz.Jfp.SimpleServer
 
             public Handler(string type, MethodInfo info, object instance)
             {
+                _type = type;
+                _methodInfo = info;
                 _instance = instance;
             }
 
