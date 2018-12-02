@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 namespace Ultz.Jfp
 {
     public delegate Stream StreamDecorator(Stream baseStream);
-    public class JfpListener
+    public class JfpListener : IJfpListener
     {
+        private int _currentId;
         public JfpListener(TcpListener tcpListener)
         {
             Server = tcpListener;
@@ -36,7 +37,7 @@ namespace Ultz.Jfp
             var client = Server.AcceptTcpClient();
             var pump= new JfpPump(Decorator(client.GetStream()));
             pump.Start();
-            return new JfpListenerContext(pump, client);
+            return new JfpListenerContext(pump, new TcpJfpClient(client,_currentId++));
         }
 
         public async Task<JfpListenerContext> AcceptContextAsync()
@@ -44,7 +45,7 @@ namespace Ultz.Jfp
             var client = await Server.AcceptTcpClientAsync();
             var pump= new JfpPump(Decorator(client.GetStream()));
             pump.Start();
-            return new JfpListenerContext(pump, client);
+            return new JfpListenerContext(pump, new TcpJfpClient(client,_currentId++));
         }
 
         public void Start()

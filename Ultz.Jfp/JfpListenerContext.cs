@@ -4,12 +4,12 @@ namespace Ultz.Jfp
 {
     public class JfpListenerContext
     {
-        public JfpListenerContext(JfpPump pump, TcpClient client)
+        public JfpListenerContext(JfpPump pump, IJfpClient client)
         {
             Pump = pump;
             Client = client;
         }
         public JfpPump Pump { get; }
-        public TcpClient Client { get; }
+        public IJfpClient Client { get; }
     }
 }
