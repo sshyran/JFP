@@ -1,0 +1,1 @@
+{"id":0,"response":true,"type":"JfpClientTest","message":"SGVsbG8=","close":false}

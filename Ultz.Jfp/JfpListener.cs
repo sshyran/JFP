@@ -2,57 +2,41 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Ultz.Jfp
 {
+    [PublicAPI]
     public delegate Stream StreamDecorator(Stream baseStream);
-    public class JfpListener : IJfpListener
+    [PublicAPI]
+    public class JfpListener
     {
-        private int _currentId;
-        public JfpListener(TcpListener tcpListener)
+        [PublicAPI]
+        public JfpListener([NotNull] TcpListener tcpListener)
         {
             Server = tcpListener;
             Decorator = stream => stream;
         }
-        
+        [PublicAPI, NotNull]
         public TcpListener Server { get; }
+        [PublicAPI, NotNull]
         public StreamDecorator Decorator { get; set; }
-
-        public JfpPump AcceptJfpPump()
+        [PublicAPI]
+        public JfpClient AcceptJfpClient()
         {
-            var pump= new JfpPump(Decorator(Server.AcceptTcpClient().GetStream()));
-            pump.Start();
-            return pump;
+            return new JfpClient(Decorator(Server.AcceptTcpClient().GetStream()));
         }
-
-        public async Task<JfpPump> AcceptJfpPumpAsync()
+        [PublicAPI]
+        public async Task<JfpClient> AcceptJfpClientAsync()
         {
-            var pump= new JfpPump(Decorator((await Server.AcceptTcpClientAsync()).GetStream()));
-            pump.Start();
-            return pump;
+            return new JfpClient(Decorator((await Server.AcceptTcpClientAsync()).GetStream()));
         }
-
-        public JfpListenerContext AcceptContext()
-        {
-            var client = Server.AcceptTcpClient();
-            var pump= new JfpPump(Decorator(client.GetStream()));
-            pump.Start();
-            return new JfpListenerContext(pump, new TcpJfpClient(client,_currentId++));
-        }
-
-        public async Task<JfpListenerContext> AcceptContextAsync()
-        {
-            var client = await Server.AcceptTcpClientAsync();
-            var pump= new JfpPump(Decorator(client.GetStream()));
-            pump.Start();
-            return new JfpListenerContext(pump, new TcpJfpClient(client,_currentId++));
-        }
-
+        [PublicAPI]
         public void Start()
         {
             Server.Start();
         }
-
+        [PublicAPI]
         public void Stop()
         {
             Server.Stop();

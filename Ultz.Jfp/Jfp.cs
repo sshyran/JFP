@@ -13,7 +13,60 @@ namespace Ultz.Jfp
         public const int Port = 285;
         public const int SecurePort = 343;
 
-        public static JfpPump Connect(Uri uri)
+        internal static JfpProtocol? GetProtocol(JfpProtocol local, JfpProtocol remote)
+        {
+            // Client | Remote | Result
+            // _______|________|________
+            // 0      | 0      | 0
+            // 1      | 0      | X
+            // 1      | 1      | 1
+            // 2      | 0      | 0
+            // 2      | 1      | 1
+            // 2      | 2      | 1
+            switch (local)
+            {
+                case JfpProtocol.Jfp:
+                    switch (remote)
+                    {
+                        case JfpProtocol.Jfp:
+                            return JfpProtocol.Jfp;
+                        case JfpProtocol.Ljfp:
+                            return null;
+                        case JfpProtocol.JfpOrLjfp:
+                            return JfpProtocol.Jfp;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(remote), remote, null);
+                    }
+                case JfpProtocol.Ljfp:
+                    switch (remote)
+                    {
+                        case JfpProtocol.Jfp:
+                            return null;
+                        case JfpProtocol.Ljfp:
+                            return JfpProtocol.Ljfp;
+                        case JfpProtocol.JfpOrLjfp:
+                            return JfpProtocol.Ljfp;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(remote), remote, null);
+                    }
+                case JfpProtocol.JfpOrLjfp:
+                    switch (remote)
+                    {
+                        case JfpProtocol.Jfp:
+                            return JfpProtocol.Jfp;
+                        case JfpProtocol.Ljfp:
+                            return JfpProtocol.Ljfp;
+                        case JfpProtocol.JfpOrLjfp:
+                            return JfpProtocol.Ljfp;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(remote), remote, null);
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(local), local, null);
+            }
+        }
+
+        public static JfpClient Connect(Uri uri)
         {
             switch (uri.Scheme.ToLower())
             {
@@ -37,9 +90,7 @@ namespace Ultz.Jfp
                     client.Connect(endPoint);
                     var stream = new SslStream(client.GetStream());
                     stream.AuthenticateAsClient(uri.Host);
-                    var pump = new JfpPump(stream);
-                    pump.Start();
-                    return pump;
+                    return new JfpClient(stream);
                 }
                 case "jfp":
                 {
@@ -60,21 +111,19 @@ namespace Ultz.Jfp
                     var client = new TcpClient();
 
                     client.Connect(endPoint);
-                    var pump = new JfpPump(client.GetStream());
-                    pump.Start();
-                    return pump;
+                    return new JfpClient(client.GetStream());
                 }
                 default:
                     throw new ArgumentException("The scheme on the given Uri in invalid for JFP(S)", nameof(uri));
             }
         }
 
-        public static JfpPump Connect(string url)
+        public static JfpClient Connect(string url)
         {
             return Connect(new Uri(url));
         }
 
-        public static JfpPump Connect(IPEndPoint endPoint, bool secure = false)
+        public static JfpClient Connect(IPEndPoint endPoint, bool secure = false)
         {
             return Connect((secure ? "jfps" : "jfp") + "://" + (endPoint.AddressFamily == AddressFamily.InterNetworkV6
                                ? "[" + endPoint.Address + "]"
@@ -90,7 +139,7 @@ namespace Ultz.Jfp
                 using (var tcpClient = new TcpClient())
                 {
                     var connectTask = tcpClient.ConnectAsync(ipEndPoint.Address, ipEndPoint.Port);
-                    var timeoutTask = Task.Delay(1000);
+                    var timeoutTask = Task.Delay(10000);
                     var finishedTask = await Task.WhenAny(connectTask, timeoutTask).ConfigureAwait(false);
 
                     bool isAlive;
