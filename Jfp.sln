@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ultz.Jfp", "Ultz.Jfp\Ultz.Jfp.csproj", "{FBFFEBAC-B638-480C-9FDA-28F49B368621}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ultz.Jfp", "src\Ultz.Jfp\Ultz.Jfp.csproj", "{FBFFEBAC-B638-480C-9FDA-28F49B368621}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ultz.Jfp.Tests", "Ultz.Jfp.Tests\Ultz.Jfp.Tests.csproj", "{F0F43271-6AFC-4296-A556-45DBA32B0F0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ultz.Jfp.Tests", "src\Ultz.Jfp.Tests\Ultz.Jfp.Tests.csproj", "{F0F43271-6AFC-4296-A556-45DBA32B0F0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
